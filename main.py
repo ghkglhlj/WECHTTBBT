@@ -5,7 +5,7 @@ import requests
 import random
 import os
 import re
-from magic_filter import 
+from magic_filter import F
 
 
 API_ID = os.environ.get("API_ID", None) 
