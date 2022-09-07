@@ -168,4 +168,27 @@ async def kukiai(client: Client, message: Message):
            ERROR_LOG, f"""{ERROR}""")
     await message.reply_text(x)
     
+@bot.on_message(
+    filters.command("setupchat", prefixes=["/", ".", "?", "-"])
+    & ~filters.private)
+async def addchat(_, message): 
+    kukidb = MongoClient(MONGO_URL)
+    
+    kuki = kukidb["KukiDb"]["Kuki"] 
+    if message.from_user:
+        user = message.from_user.id
+        chat_id = message.chat.id
+        if user not in (
+            await is_admins(chat_id)
+        ):
+            return await message.reply_text(
+                "You are not admin"
+            )
+    is_kuki = kuki.find_one({"chat_id": message.chat.id})
+    if not is_kuki:
+        kuki.insert_one({"chat_id": message.chat.id})
+        await message.reply_text(f"✅ | Successfully\n𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group is set to @{message.chat.username}\n Requested by [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n© @updatesofficiall")
+    else:
+        await message.reply_text(f"Already Setup 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group Is @{message.chat.username}")
+    
 bot.run()
