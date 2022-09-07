@@ -14,9 +14,6 @@ STRING = os.environ.get("STRING", None)
 MONGO_URL = os.environ.get("MONGO_URL", None)
 
 
-bot = Client(STRING, API_ID, API_HASH)
-
-
 async def is_admins(chat_id: int):
     return [
         member.user.id
@@ -26,40 +23,13 @@ async def is_admins(chat_id: int):
     ]
 
 
-@bot.on_message(filters.command("start"))
-async def start(client, message):
-        await message.reply_text("Hi! My name is Nethya I'm an Artificial Intelligence")
-
-
 @bot.on_message(
-    filters.command("chatbot off", prefixes=["/", ".", "?", "-"])
+    filters.command("setupchat", prefixes=["/", ".", "?", "-"])
     & ~filters.private)
-async def chatbotofd(client, message):
-    vickdb = MongoClient(MONGO_URL)    
-    vick = vickdb["VickDb"]["Vick"]     
-    if message.from_user:
-        user = message.from_user.id
-        chat_id = message.chat.id
-        if user not in (
-           await is_admins(chat_id)
-        ):
-           return await message.reply_text(
-                "You are not admin"
-            )
-    is_vick = vick.find_one({"chat_id": message.chat.id})
-    if not is_vick:
-        vick.insert_one({"chat_id": message.chat.id})
-        await message.reply_text(f"Chatbot Disabled!")
-    if is_vick:
-        await message.reply_text(f"ChatBot Is Already Disabled")
+async def addchat(_, message): 
+    kukidb = MongoClient(MONGO_URL)
     
-
-@bot.on_message(
-    filters.command("chatbot on", prefixes=["/", ".", "?", "-"])
-    & ~filters.private)
-async def chatboton(client, message):
-    vickdb = MongoClient(MONGO_URL)    
-    vick = vickdb["VickDb"]["Vick"]     
+    kuki = kukidb["KukiDb"]["Kuki"] 
     if message.from_user:
         user = message.from_user.id
         chat_id = message.chat.id
@@ -69,19 +39,39 @@ async def chatboton(client, message):
             return await message.reply_text(
                 "You are not admin"
             )
-    is_vick = vick.find_one({"chat_id": message.chat.id})
-    if not is_vick:           
-        await message.reply_text(f"Chatbot Is Already Enabled")
-    if is_vick:
-        vick.delete_one({"chat_id": message.chat.id})
-        await message.reply_text(f"ChatBot Is Enable!")
-    
+    is_kuki = kuki.find_one({"chat_id": message.chat.id})
+    if not is_kuki:
+        kuki.insert_one({"chat_id": message.chat.id})
+        await message.reply_text(f"✅ | Successfully\n𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group is set to @{message.chat.username}\n Requested by [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n© @updatesofficiall")
+    else:
+        await message.reply_text(f"Already Setup 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group Is @{message.chat.username}")
+
 
 @bot.on_message(
-    filters.command("chatbot", prefixes=["/", ".", "?", "-"])
+    filters.command("removechat", prefixes=["/", ".", "?", "-"])
     & ~filters.private)
-async def chatbot(client, message):
-    await message.reply_text(f"**Usage:**\n/chatbot [on|off] only group")
+async def rmchat(_, message): 
+    kukidb = MongoClient(MONGO_URL)
+    
+    kuki = kukidb["KukiDb"]["Kuki"] 
+    if message.from_user:
+        user = message.from_user.id
+        chat_id = message.chat.id
+        if user not in (
+            await is_admins(chat_id)
+        ):
+            return await message.reply_text(
+                "You are not admin"
+            )
+    is_kuki = kuki.find_one({"chat_id": message.chat.id})
+    if not is_kuki:
+        await message.reply_text("Already 𝙉𝙚𝙩𝙝𝙮𝙖 ChatBot Disable")
+    else:
+        kuki.delete_one({"chat_id": message.chat.id})
+        await message.reply_text("✅ | 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot is disable!")
+
+
+
 
 
 @bot.on_message(
@@ -168,27 +158,78 @@ async def kukiai(client: Client, message: Message):
            ERROR_LOG, f"""{ERROR}""")
     await message.reply_text(x)
     
-@bot.on_message(
-    filters.command("setupchat", prefixes=["/", ".", "?", "-"])
-    & ~filters.private)
-async def addchat(_, message): 
-    kukidb = MongoClient(MONGO_URL)
-    
-    kuki = kukidb["KukiDb"]["Kuki"] 
-    if message.from_user:
-        user = message.from_user.id
-        chat_id = message.chat.id
-        if user not in (
-            await is_admins(chat_id)
-        ):
-            return await message.reply_text(
-                "You are not admin"
-            )
-    is_kuki = kuki.find_one({"chat_id": message.chat.id})
-    if not is_kuki:
-        kuki.insert_one({"chat_id": message.chat.id})
-        await message.reply_text(f"✅ | Successfully\n𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group is set to @{message.chat.username}\n Requested by [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n© @updatesofficiall")
+
+
+
+
+
+@bot.on_message(filters.command(["start"], prefixes=["/", "!"]))
+async def start(client, message):
+    self = await bot.get_me()
+    busername = self.username
+    if message.chat.type != "private":
+        buttons = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Click here",
+                url=f"http://t.me/{BOT_USERNAME}?start")]])
+        await message.reply("Contact me in PM",
+                            reply_markup=buttons)
+        
     else:
-        await message.reply_text(f"Already Setup 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot of this Group Is @{message.chat.username}")
-    
+       
+        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_GROUP}"),
+                    InlineKeyboardButton("Add", url=f"t.me/{BOT_USERNAME}?startgroup=true")
+                    ]]
+        Photo = "https://telegra.ph/file/23932e22ece464a1fb06e.jpg"
+        await message.reply_photo(Photo, caption=f"Hello [{message.from_user.first_name}](tg://user?id={message.from_user.id}), Machine Learning Chat Bot that can talk about any topic in any language\n /help - Help Commands\n ", reply_markup=InlineKeyboardMarkup(buttons))
+
+
+
+@bot.on_message(filters.command(["help"], prefixes=["/", "!"]))
+async def help(client, message):
+    self = await bot.get_me()
+    busername = self.username
+    if message.chat.type != "private":
+        buttons = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Click here",
+                url=f"http://t.me/nethyabot?start=help_")]])
+        await message.reply("Contact me in PM",
+                            reply_markup=buttons)
+        
+    else:    
+        await message.reply_text("/start - Start The Bot\n/chat - Send a message to this bot\n/setupchat - Active 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot In Group\n/removechat - Disable 𝙉𝙚𝙩𝙝𝙮𝙖 Chatbot In Group")
+
+@bot.on_message(filters.command(["allo"], prefixes=["h"]))
+async def help(client, message):
+    self = await bot.get_me()
+    busername = self.username
+    if message.chat.type != "private":
+        
+        await message.reply('''Hallo😂 hru? 
+        Can you defeat me in chatting😏?''')
+      
+
+@bot.on_message(filters.command(["ii"], prefixes=["h"]))
+async def help(client, message):
+    self = await bot.get_me()
+    busername = self.username
+    if message.chat.type != "private":
+        
+        await message.reply('''Hallo😂 hru? 
+        Can you defeat me in chatting😏?''')
+        
+@bot.on_message(filters.command(["nethyabot"], prefixes=["@"]))
+async def help(client, message):
+    self = await bot.get_me()
+    busername = self.username
+    if message.chat.type != "private":
+        
+        await message.reply('''Hallo😂 hru?
+        Can you defeat me in chatting😏?''')
+        
+  
+
+
+
+
+
 bot.run()
