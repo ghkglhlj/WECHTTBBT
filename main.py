@@ -114,7 +114,7 @@ async def kukiai(client: Client, message: Message):
                await asyncio.sleep(1)
            except Exception as e:
                error = str(e)
-          
+           await message.reply_text(x)
            await bot.send_message(
            ERROR_LOG, f"""{error}""")
            await bot.send_chat_action(message.chat.id, "cencel") 
