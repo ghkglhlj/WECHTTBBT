@@ -6,6 +6,7 @@ import random
 import os
 import re
 from magic_filter import F
+import asyncio
 
 
 API_ID = os.environ.get("API_ID", None) 
