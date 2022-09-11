@@ -15,6 +15,6 @@ https://img.shields.io/badge/-%2F%2Fchatboton--For Enable Nethya--Id--chatbot.-c
 
 ### Support 
 
-<p align="center"><a href="https://t.me/MagicalDuniya"> <img src="https://img.shields.io/badge/-%2F%2Fchatboton--For Enable Nethya--Id--chatbot.-critical" width="220" height="38.45"/></a></p>
+<p align="center"><a href=""> <img src="https://img.shields.io/badge/-%2F%2Fchatboton--For Enable Nethya--Id--chatbot.-critical""/></a></p>
 
 <p align="center"><a href="https://t.me/YouKnowHNY"> <img src="https://img.shields.io/badge/YouKnowHNY-blue?style=for-the-badge" width="220" height="38.45"/></a></p>
